@@ -1,0 +1,8 @@
+.home_header{
+  transition: opacity 0.2s;
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(95deg, #5CE2FF, #6AFFAE, #5CE2FF, #6AFFAE);
+  background-size: 200% 200%;
+  animation: animateGlow 5s linear infinite;
+}
