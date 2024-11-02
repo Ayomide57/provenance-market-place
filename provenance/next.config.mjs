@@ -4,17 +4,15 @@ const nextConfig = {
     domains: ["ipfs.io"],
   },
 
+  webpack: (config) => {
+    config.externals.push("pino-pretty", "lokijs", "encoding");
+    return config;
+  },
+
   remotePatterns: [
     {
       protocol: "https",
       hostname: "ipfs.io",
-      port: "",
-      pathname: "**",
-    },
-    {
-      protocol: "https",
-      hostname: "another-example.com",
-      port: "",
       pathname: "**",
     },
   ],
