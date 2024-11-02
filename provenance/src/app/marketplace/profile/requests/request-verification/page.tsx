@@ -9,11 +9,8 @@ import Link from "next/link";
 import { PropertyMetaData } from "@/types/property";
 import { upload } from "thirdweb/storage";
 import { useActiveAccount } from "thirdweb/react";
-import { useRouter } from "next/router";
 
 const VerificationRequest = () => {
-  const router = useRouter();
-
   const smartAccount = useActiveAccount();
 
   let property_metadata: PropertyMetaData = {
@@ -79,7 +76,6 @@ const VerificationRequest = () => {
     });
       if (response.includes("0x")) {
         toast.success(response); // Displays a success message
-        router.reload();
       } else {
         toast.error("Failed")
       }
