@@ -7,6 +7,13 @@ import Image from "next/image";
 import SidebarItem from "@/components/Sidebar/SidebarItem";
 import ClickOutside from "@/components/ClickOutside";
 import useLocalStorage from "@/hooks/useLocalStorage";
+import {
+  faHouse,
+  faMoneyCheckDollar,
+  faHandHoldingDollar,
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
 
 interface SidebarProps {
   sidebarOpen: boolean;
@@ -81,7 +88,6 @@ const menuGroups = [
         route: "#",
         children: [
           { label: "All RWAs", route: "/admin/rwa" },
-          { label: "Generate Rwa", route: "/admin/rwa/generate-rwa" },
           { label: "Create Rwa", route: "/admin/rwa/create-rwa" },
         ],
       },
@@ -142,7 +148,12 @@ const menuGroups = [
           </svg>
         ),
         label: "Profile",
-        route: "/profile",
+        route: "/admin/profile",
+      },
+      {
+        icon: <FontAwesomeIcon icon={faMoneyCheckDollar} width={20} />,
+        label: "My Token",
+        route: "/admin/token",
       },
       {
         icon: (
@@ -181,7 +192,6 @@ const menuGroups = [
       },
     ],
   },
-
 ];
 
 const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {

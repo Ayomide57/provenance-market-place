@@ -45,7 +45,7 @@ export type Request = {
   property_RegId: BigNumberish;
 };
 
-export const columns: ColumnDef<Request>[] = [
+const columns: ColumnDef<Request>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -144,7 +144,7 @@ const Requests = () => {
 
   const queryRwaEvents = React.useCallback(async () => {
     const events = await registrarContract.queryFilter(
-      "AssetVerificationRequest",
+      "EventAssetVerificationRequest",
     );
     const filterVal: Request[] = [];
     events.map(

@@ -9,7 +9,6 @@ contract Registrar {
     error ErrorUnauthorize();
     error ErrorNewPriceShouldBeHigher();
 
-
     //Only registra can mint a Nft Property Token
     uint256 public immutable PROPERTY_TOKEN = 1000;
     uint256 public BID_DURATION = 4 weeks ;
@@ -38,13 +37,14 @@ contract Registrar {
         address indexed previousOwner,
         address indexed newOwner,
         address nftAddress,
-        uint256 property_RegId
+        uint256 indexed property_RegId
     );
     event EventAssetVerified(
         address indexed p_owner,
         address nftAddress,
         uint256 indexed property_RegId,
         uint256 indexed value,
+        string document_url,
         bool verified
     );
     event EventAssetVerificationRequest(
@@ -53,10 +53,10 @@ contract Registrar {
     );
 
     event EventInitiatedBid(
-        address _p_owner,
-        uint256 _property_RegId,
+        address indexed _p_owner,
+        uint256 indexed _property_RegId,
         uint256 _auctionEndTime,
-        Auction auction
+        Auction indexed auction
     );
 
 
@@ -104,6 +104,7 @@ contract Registrar {
             address(_newRwaToken),
             assets[_p_owner][_property_RegId].property_RegId,
             _price,
+            assets[_p_owner][_property_RegId].document_url,
             true
         );
         return true;
@@ -122,6 +123,7 @@ contract Registrar {
             address(_newRwaToken),
             _property_RegId,
             _price,
+            _document_url,
             true
         );
         return true;
@@ -136,7 +138,7 @@ contract Registrar {
         if(_price <= assets[msg.sender][_property_RegId].value) revert ErrorNewPriceShouldBeHigher();
         assets[msg.sender][_property_RegId].p_owner = _new_owner;
         assets[_new_owner][_property_RegId] = Asset(true, true, _new_owner, nftAddress, _property_RegId, _price, assets[msg.sender][_property_RegId].document_url, 0);
-        emit EventAssetVerified(_new_owner, address(nftAddress), _property_RegId, _price, true);
+        emit EventAssetVerified(_new_owner, address(nftAddress), _property_RegId, _price, assets[msg.sender][_property_RegId].document_url, true);
         emit EventAssetTransferred(msg.sender, nftAddress, _new_owner, _property_RegId);
         return true;
     }
@@ -166,7 +168,7 @@ contract Registrar {
 // Initiate New Auction Contract every time user initiate a bid 
 
     function initiateBid(
-       uint256 _tokenId
+       uint256 _tokenId //_property_RegId
     ) onlyPropertyOwner(msg.sender, _tokenId) public returns(bool){
         uint256 _bid_duration = block.timestamp + BID_DURATION; 
         uint starting_bid = assets[msg.sender][_tokenId].value / PROPERTY_TOKEN;
@@ -177,5 +179,3 @@ contract Registrar {
     }
 
 }
-
-

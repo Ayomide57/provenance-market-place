@@ -37,6 +37,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { BigNumberish } from "ethers";
+import Link from "next/link";
 
 export type Request = {
   id: any;
@@ -44,7 +45,7 @@ export type Request = {
   property_RegId: BigNumberish;
 };
 
-export const columns: ColumnDef<Request>[] = [
+const columns: ColumnDef<Request>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -130,7 +131,11 @@ export const columns: ColumnDef<Request>[] = [
               Copy Property ID
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>View request details</DropdownMenuItem>
+            <DropdownMenuItem>
+              <Link href={`/admin/rwa/generate-rwa/${request.property_RegId}/${request.p_owner}`}>
+                View request details
+              </Link>
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );
@@ -143,7 +148,7 @@ const VerificationRequests = () => {
 
   const queryRwaEvents = React.useCallback(async () => {
     const events = await registrarContract.queryFilter(
-      "AssetVerificationRequest",
+      "EventAssetVerificationRequest",
     );
     const filterVal: Request[] = [];
     events.map((event: { args: { tokenId: any; p_owner: any; property_RegId: any}; }) => {

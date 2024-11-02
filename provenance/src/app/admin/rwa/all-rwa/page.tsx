@@ -40,8 +40,7 @@ import {
 import { Asset } from "@/types/property";
 
 
-
-export const columns: ColumnDef<Asset>[] = [
+const columns: ColumnDef<Asset>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -205,12 +204,12 @@ export const columns: ColumnDef<Asset>[] = [
 
 
 const Rwa = () => {
-  const [data, setProperties] = useState<any>([]);
+  const [data, setProperties] = useState<any>();
 
   const queryRwaEvents = React.useCallback(async () => {
-    const events = await registrarContract.queryFilter("AssetVerified");
+    const events = await registrarContract.queryFilter("EventAssetVerified");
     const filterVal: Asset[] = [];
-    events.map((event: { args: { tokenId: any; p_owner: any; nftAddress: any; property_RegId: any; survey_zip_code: any; survey_number: any; value: any; verified: any; }; }) => {
+    events.map((event: { args: { tokenId: any; p_owner: any; nftAddress: any; property_RegId: any; value: any; verified: any; }; }) => {
       return (
         event.args &&
         filterVal.push({
@@ -218,8 +217,6 @@ const Rwa = () => {
           p_owner: event.args.p_owner,
           nftAddress: event.args.nftAddress,
           property_RegId: event.args.property_RegId,
-          survey_zip_code: event.args.survey_zip_code,
-          survey_number: event.args.survey_number,
           value: event.args.value,
           verified: event.args.verified,
         })
@@ -239,7 +236,7 @@ const Rwa = () => {
 
   useEffect(() => {
       queryRwaEvents();
-  }, [data, queryRwaEvents]);
+  }, [data, queryRwaEvents, setProperties]);
 
 
 

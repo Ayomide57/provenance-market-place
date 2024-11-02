@@ -40,7 +40,7 @@ import {
 import { Asset } from "@/types/property";
 import { useActiveAccount } from "thirdweb/react";
 
-export const columns: ColumnDef<Asset>[] = [
+const columns: ColumnDef<Asset>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -173,7 +173,7 @@ export const columns: ColumnDef<Asset>[] = [
             <DropdownMenuSeparator />
             <DropdownMenuItem>
               <Link
-                href={`/marketplace/profile/my-properties/property-detail/${asset.id}/${asset.p_owner}`}
+                href={`/marketplace/product-details/${asset.id}/${asset.p_owner}`}
               >
                 View asset details
               </Link>
@@ -191,7 +191,7 @@ const smartAccount = useActiveAccount();
 
     const queryRwaEvents = React.useCallback(async () => {
       //queryFilter, filters
-    const events = await registrarContract.queryFilter("AssetVerified");
+    const events = await registrarContract.queryFilter("EventAssetVerified");
     const filterVal: Asset[] = [];
     events.map(
       (event: {
@@ -210,12 +210,10 @@ const smartAccount = useActiveAccount();
           event.args &&
           event.args.p_owner == smartAccount?.address &&
           filterVal.push({
-            id: event.args.tokenId,
+            id: event.args.property_RegId,
             p_owner: event.args.p_owner,
             nftAddress: event.args.nftAddress,
             property_RegId: event.args.property_RegId,
-            survey_zip_code: event.args.survey_zip_code,
-            survey_number: event.args.survey_number,
             value: event.args.value,
             verified: event.args.verified,
           })

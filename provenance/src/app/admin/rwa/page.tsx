@@ -39,18 +39,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { BigNumberish } from "ethers";
-
-export type MyLoan2 = {
-  id: any; //
-  p_owner: string; //
-  nftAddress: string; //
-  property_RegId: BigNumberish; //
-  value: BigNumberish; //
-  verified: boolean; //
-};
+import { Asset } from "@/types/property";
 
 
-export const columns: ColumnDef<MyLoan2>[] = [
+const columns: ColumnDef<Asset>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -77,7 +69,9 @@ export const columns: ColumnDef<MyLoan2>[] = [
     accessorKey: "verified",
     header: "Verify Status",
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("verified")}</div>
+      <div className="capitalize">
+        {row.getValue("verified") ? "Verified" : "Not Verified"}
+      </div>
     ),
   },
   {
@@ -94,7 +88,14 @@ export const columns: ColumnDef<MyLoan2>[] = [
       );
     },
     cell: ({ row }) => (
-      <div className="px-4 lowercase">{row.getValue("p_owner")}</div>
+      <div
+        onClick={() =>
+          navigator.clipboard.writeText(`${row.getValue("p_owner")}`)
+        }
+        className="cursor-pointer px-4 lowercase"
+      >
+        {`${row.getValue("p_owner")}`.substr(0, 15) + " ..."}
+      </div>
     ),
   },
   {
@@ -111,31 +112,38 @@ export const columns: ColumnDef<MyLoan2>[] = [
       );
     },
     cell: ({ row }) => (
-      <div className="px-4 lowercase">{row.getValue("nftAddress")}</div>
+      <div
+        onClick={() =>
+          navigator.clipboard.writeText(`${row.getValue("nftAddress")}`)
+        }
+        className="cursor-pointer px-4 lowercase"
+      >
+        {`${row.getValue("nftAddress")}`.substr(0, 15) + " ..."}
+      </div>
     ),
   },
   {
-    accessorKey: "amount",
+    accessorKey: "value",
     header: () => <div className="text-right">Amount</div>,
     cell: ({ row }) => {
       const amount = parseFloat(row.getValue("value"));
 
-      // Format the amount as a dollar amount
+      //Format the amount as a dollar amount
       const formatted = new Intl.NumberFormat("en-US", {
         style: "currency",
         currency: "USD",
       }).format(amount);
 
-      return <div className="text-right font-medium">{formatted}</div>;
+      return <div className="text-right font-medium">{`${formatted}`}</div>;
     },
   },
   {
     accessorKey: "property_RegId",
-    header: () => <div className="text-right">property Registration Id</div>,
+    header: () => <div className="text-right">Property Registration Id</div>,
     cell: ({ row }) => {
       return (
         <div className="text-right font-medium">
-          {row.getValue("property_RegId")}
+          {`${row.getValue("property_RegId")}`}{" "}
         </div>
       );
     },
@@ -145,7 +153,7 @@ export const columns: ColumnDef<MyLoan2>[] = [
     id: "actions",
     enableHiding: false,
     cell: ({ row }) => {
-      const loan = row.original;
+      const asset = row.original;
 
       return (
         <DropdownMenu>
@@ -161,13 +169,12 @@ export const columns: ColumnDef<MyLoan2>[] = [
           >
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(loan.id)}
+              onClick={() => navigator.clipboard.writeText(asset.id)}
             >
-              Copy Loan ID
+              Copy Token ID
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>View customer</DropdownMenuItem>
-            <DropdownMenuItem>View loan details</DropdownMenuItem>
+            <DropdownMenuItem>View asset details</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );
@@ -176,31 +183,37 @@ export const columns: ColumnDef<MyLoan2>[] = [
 ];
 
 
-const Loan = () => {
+const Rwa = () => {
   const [data, setProperties] = useState<any>([]);
-
   const queryRwaEvents = React.useCallback(async () => {
-    const events = await registrarContract.queryFilter("AssetVerified");
-    events.map((event: { args: { tokenId: any; p_owner: any; nftAddress: any; property_RegId: any; value: any; verified: any; }; }) => {
-      return (
-        event.args &&
-        setProperties([
-          ...data,
-          {
+    const events = await registrarContract.queryFilter("EventAssetVerified");
+        const filterVal: Asset[] = [];
+    events.map(
+      (event: {
+        args: {
+          tokenId: any;
+          p_owner: any;
+          nftAddress: any;
+          property_RegId: any;
+          value: any;
+          verified: any;
+        };
+      }) => {
+        return (
+          event.args &&
+          filterVal.push({
             id: event.args.tokenId,
             p_owner: event.args.p_owner,
             nftAddress: event.args.nftAddress,
             property_RegId: event.args.property_RegId,
             value: event.args.value,
             verified: event.args.verified,
-          },
-        ])
-      );
-    });
-
-    console.log("events", data);
-  }, [data]);
-
+          })
+        );
+      },
+    );
+    setProperties(filterVal);
+  }, []);
 
   useEffect(() => {
       queryRwaEvents();
@@ -214,7 +227,6 @@ const Loan = () => {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
-
 
   const table = useReactTable({
     data,
@@ -241,17 +253,9 @@ const Loan = () => {
         <div className="flex justify-between">
           <div>
             {" "}
-            <h1 className="p-4 text-3xl">Loan Requests</h1>
+            <h1 className="p-4 text-3xl">All Assets</h1>
           </div>
-          <div className="p-8">
-            {" "}
-            <Link
-              href="/dashboard/loans/request-loan"
-              className="text-1xl rounded-lg border border-slate-400 p-3"
-            >
-              Request Loan
-            </Link>
-          </div>
+
         </div>
 
         <div className={styles.content}>
@@ -388,5 +392,4 @@ const Loan = () => {
     </>
   );
 };
-
-export default Loan;
+export default Rwa;

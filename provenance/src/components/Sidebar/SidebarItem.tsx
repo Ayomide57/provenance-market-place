@@ -21,6 +21,11 @@ const SidebarItem = ({ item, pageName, setPageName }: any) => {
     return false;
   };
 
+  const classValue =
+    pageName === item.label.toLowerCase()
+      ? "absolute right-4 top-1/2 -translate-y-1/2 fill-current rotate-180"
+      : "absolute right-4 top-1/2 -translate-y-1/2 fill-current";
+
   const isItemActive = isActive(item);
 
   return (
@@ -35,9 +40,7 @@ const SidebarItem = ({ item, pageName, setPageName }: any) => {
           {item.label}
           {item.children && (
             <svg
-              className={`absolute right-4 top-1/2 -translate-y-1/2 fill-current ${
-                pageName === item.label.toLowerCase() && "rotate-180"
-              }`}
+              className={classValue}
               width="20"
               height="20"
               viewBox="0 0 20 20"

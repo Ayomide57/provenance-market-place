@@ -15,8 +15,6 @@ export type Asset = {
   p_owner: string;
   nftAddress: string;
   property_RegId: BigNumberish;
-  survey_zip_code: BigNumberish;
-  survey_number: BigNumberish;
   value: BigNumberish;
   verified: boolean;
 };

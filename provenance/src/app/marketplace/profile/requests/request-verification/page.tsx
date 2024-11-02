@@ -11,9 +11,9 @@ import { upload } from "thirdweb/storage";
 import { useActiveAccount } from "thirdweb/react";
 
 const VerificationRequest = () => {
-      const smartAccount = useActiveAccount();
+  const smartAccount = useActiveAccount();
 
-      let property_metadata: PropertyMetaData = {
+  let property_metadata: PropertyMetaData = {
         name: "string",
         address: "",
         description: "",
@@ -23,81 +23,68 @@ const VerificationRequest = () => {
         attributes: [],
       };
 
-  const [ipfsLink, updateLink] = useState<string[] | undefined>([
-    "ipfs://QmNoVnHakRYX24dyVozMs7QXHDa4DvT7rqxPFif7zQkd8Y/if%20i%20were%20a%20boy.jpg",
-  ]);
+  const [ipfsLink, updateLink] = useState<string[] | undefined>();
   const [tokenURI, updatetokenURI] = useState<string | undefined>();
 
-  const [ipfsImages, updateImagesLink] = useState<string[] | undefined>([
-    "ipfs://QmNoVnHakRYX24dyVozMs7QXHDa4DvT7rqxPFif7zQkd8Y/if%20i%20were%20a%20boy.jpg",
-    "ipfs://QmNoVnHakRYX24dyVozMs7QXHDa4DvT7rqxPFif7zQkd8Y/Jonas%20Blue%20-%20Rise%20ft.%20Jack%20%26%20Jack%20(Official%20Video).jpg",
-    "ipfs://QmNoVnHakRYX24dyVozMs7QXHDa4DvT7rqxPFif7zQkd8Y/Little%20Mix%20-%20Secret%20Love%20Song%20(Official%20Video)%20ft.%20Jason%20Derulo.jpg",
-    "ipfs://QmNoVnHakRYX24dyVozMs7QXHDa4DvT7rqxPFif7zQkd8Y/Screenshot%202024-10-03%20at%2014.41.33.png",
-  ]);
+  const [ipfsImages, updateImagesLink] = useState<string[] | undefined>();
 
-          const handleVerificationRequestSubmit = (
-            values: {
-              name: string;
-              address: string;
-              description: string;
-              p_owner: any;
-              property_RegId: number | null;
-              survey_zip_code: number | null;
-              survey_number: number | null;
-              tokenURI: string;
+    const handleVerificationRequestSubmit = async (
+      values: {
+        name: string;
+        address: string;
+        description: string;
+        p_owner: any;
+        property_RegId: number | null;
+        survey_zip_code: number | null;
+        survey_number: number | null;
+        tokenURI: string;
+      }
+    ) => {
+      values.p_owner = smartAccount && smartAccount?.address;
+      property_metadata.name = values.name;
+      property_metadata.address = values.address;
+      property_metadata.description = values.description;
+      property_metadata.property_Reg_Id = values.property_RegId
+        ? values.property_RegId
+        : 0;
+      property_metadata.images = ipfsImages ? ipfsImages : [];
+      property_metadata.document_url = ipfsLink ? ipfsLink[0] : "";
+      property_metadata.attributes = [
+        {
+          trait_type: "Survey Zip Code",
+          value: values.survey_zip_code,
+        },
+        { trait_type: "Survey Number", value: values.survey_number },
+      ];
+
+      const uris = await upload({
+          client,
+          files: [
+            {
+              name: "property",
+              data: property_metadata,
             },
-            setSubmitting: {
-              (isSubmitting: boolean): void;
-              (arg0: boolean): void;
-            },
-          ) => {
-              setTimeout(async () => {
-                values.p_owner = smartAccount && smartAccount?.address;
-              console.log("values =======================", values);
-              property_metadata.name = values.name;
-              property_metadata.address = values.address;
-              property_metadata.description = values.description;
-              property_metadata.property_Reg_Id =
-                values.property_RegId ? values.property_RegId : 0;
-              property_metadata.images = ipfsImages ? ipfsImages : [];
-              property_metadata.document_url = ipfsLink ? ipfsLink[0] : "";
-              property_metadata.attributes = [
-                {
-                  trait_type: "Survey Zip Code",
-                  value: values.survey_zip_code,
-                },
-                { trait_type: "Survey Number", value: values.survey_number },
-              ];
-              values.tokenURI = tokenURI ? tokenURI : "";
+          ],
+        });
+      updatetokenURI(uris);
 
-              console.log(
-                "property_metadata =====================",
-                property_metadata,
-              );
-              /**const uris = await upload({
-                client,
-                files: [
-                  {
-                    name: "property",
-                    data: property_metadata,
-                  },
-                ],
-              });**/
+      const response:any = await verificationRequest({  
+        account: smartAccount,
+        p_owner: smartAccount ? smartAccount.address : "",
+        property_RegId: values.property_RegId ? values.property_RegId : 0,
+        document_url: uris
+    });
+      if (response.includes("0x")) {
+        toast.success(response); // Displays a success message
+      } else {
+        toast.error("Failed")
+      }
+  };
 
-              //console.log("fileBuffer ============================", uris);
-
-              //const response = await verificationRequest(values);
-              //const response = await createNewRwa(values);
-              //if (response.includes("0x")) toast.success(response); // Displays a success message
-              //console.log(values);
-              setSubmitting(false);
-            }, 400);
-          };
-
-          useEffect(() => {
-            //console.log(ipfsLink);
-            //console.log("ipfsImages ===================================", ipfsImages);
-          }, [ipfsLink, ipfsImages]);
+  useEffect(() => {
+    //console.log(ipfsLink);
+    //console.log("ipfsImages ===================================", ipfsImages);
+  }, [ipfsLink, ipfsImages]);
     
     return (
       <div className="ml-20">
@@ -113,7 +100,7 @@ const VerificationRequest = () => {
             tokenURI: tokenURI ? tokenURI : "",
           }}
           onSubmit={(values, { setSubmitting }) =>
-            handleVerificationRequestSubmit(values, setSubmitting)
+            handleVerificationRequestSubmit(values)
           }
         >
           {({
@@ -269,3 +256,39 @@ const VerificationRequest = () => {
 };
 
 export default VerificationRequest;
+
+/**
+ * 
+ *     "ipfs://QmNoVnHakRYX24dyVozMs7QXHDa4DvT7rqxPFif7zQkd8Y/if%20i%20were%20a%20boy.jpg",
+    "ipfs://QmNoVnHakRYX24dyVozMs7QXHDa4DvT7rqxPFif7zQkd8Y/Jonas%20Blue%20-%20Rise%20ft.%20Jack%20%26%20Jack%20(Official%20Video).jpg",
+    "ipfs://QmNoVnHakRYX24dyVozMs7QXHDa4DvT7rqxPFif7zQkd8Y/Little%20Mix%20-%20Secret%20Love%20Song%20(Official%20Video)%20ft.%20Jason%20Derulo.jpg",
+    "ipfs://QmNoVnHakRYX24dyVozMs7QXHDa4DvT7rqxPFif7zQkd8Y/Screenshot%202024-10-03%20at%2014.41.33.png",
+
+ */
+
+    /******
+     * address: 92 Corey St, Boston, MA 02132
+     * Name: Spacious home in the heart of West Roxbury with 3 floors of living
+     * user: 0x15427D97E45e3374DF934B0f1292C8556D1B79DD
+     * price: 175000
+     * zipcode: 02132
+     * reg: 127
+     * Survey Number: 1104789
+     * desc: The epitome of convenience. Located close to all that Centre St has to offer: 
+     * restaurants, shops, gyms, Roche Bros supermarket, commuter rail line and bus lines (walk score: 89). 
+     * Spacious home in the heart of West Roxbury with 3 floors of living. This home features high ceilings, 
+     * hardwood floors throughout, spacious kitchen that flows smoothly to the dining room and living room, 
+     * and first floor laundry. On the 2nd floor there is a full bath, and three large bedrooms with hardwood 
+     * floors and sizable closets. One bedroom has direct access to deck. The 3rd floor has another full bath, 
+     * a bedroom, and bonus room with exposed brick for another bedroom, home office or workout area. 
+     * The home offers charming woodwork and character but also features some modern 
+     * day conveniences including central air and Nest Thermostats. Exclusive use of a two-car garage.
+     * 
+     * 
+     * 
+     * 
+     * 
+     * 
+     * 
+     * 
+     */

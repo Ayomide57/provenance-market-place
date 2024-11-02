@@ -1,6 +1,6 @@
 "use client";
 import ProductForm from "@/components/ProductForm";
-import ProductImage from "@/components/ProductImage";
+import ProductImage from "@/components/ProductImages";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Link from "next/link";
@@ -9,8 +9,6 @@ import { assets } from "@/util";
 import React from "react";
 import { BigNumberish } from "ethers";
 import { Product } from "@/types/property";
-
-
 
 function ProductDetail({
   params,
@@ -24,22 +22,22 @@ function ProductDetail({
     { originalSrc: "/house.jpg", altText: "house" },
   ];
 
-      const product: any =  assets({
-        address: params.address,
-        property_RegId: Number(params.id),
-      });
-      console.log(product);
+  const product: any = assets({
+    account: params.address,
+    property_RegId: Number(params.id),
+  });
+  console.log(product);
 
-      const fetchIPFSInfo = React.useCallback(async () => {
-        const data = await fetch(
-          "https://ipfs.io/ipfs/QmbKbzFYc5vX83CwLadwxHGBjer3AN9HTY2hmeai7XSSbp/0",
-          { headers: { Accept: "application/json" } },
-        );
-        //const newJson = JSON.parse(`${ json }`);
-        //const obj = JSON.parse('{"name":"John", "age":30, "city":"New York"}');
-        const jsonRp = await data.json();
-        console.log("data ===========================", jsonRp.data.name);
-      }, []);
+  const fetchIPFSInfo = React.useCallback(async () => {
+    const data = await fetch(
+      "https://ipfs.io/ipfs/QmbKbzFYc5vX83CwLadwxHGBjer3AN9HTY2hmeai7XSSbp/0",
+      { headers: { Accept: "application/json" } },
+    );
+    //const newJson = JSON.parse(`${ json }`);
+    //const obj = JSON.parse('{"name":"John", "age":30, "city":"New York"}');
+    const jsonRp = await data.json();
+    console.log("data ===========================", jsonRp.data.name);
+  }, []);
 
   useEffect(() => {
     //queryProductData();
@@ -87,11 +85,7 @@ function ProductDetail({
               <p className="text-lg font-medium">
                 value: {`${productData.value}`}
               </p>
-              <Link
-                href={"/"}
-              >
-                View Info
-              </Link>
+              <Link href={"/"}>View Info</Link>
               <div className="text-palette-primary px-1 py-4 text-xl font-medium">
                 {"$"}
                 <span className={"text-2xl"}>{`${productData.value}`}</span>

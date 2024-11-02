@@ -1,13 +1,15 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.13;
-import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import {IERC20} from "@openzeppelin/contracts/interfaces/IERC20.sol";
 
 
 contract Auction {
-    error AuctionHasEnded();
-    error AuctionHasNotEnded();
-    error BidNotHighEnough();
-    error OnlyOwnerCanEndAuction();
+    error ErrorAuctionHasEnded();
+    error ErrorAuctionHasNotEnded();
+    error ErrorBidNotHighEnough();
+    error ErrorOnlyOwnerCanEndAuction();
+    error ErrorApprovalFail();
+
 
 
     address public auctioneer;
@@ -16,7 +18,7 @@ contract Auction {
     uint256 public auctionEndTime;
     uint256 public property_value;
     bool public ended;
-    ERC20 public pmpToken;
+    IERC20 public pmpToken;
     
     event EventBid(
         address _bidder,
@@ -28,29 +30,29 @@ contract Auction {
     constructor(address _property_owner, uint256 _auctionEndTime, uint256 _property_value, address _pmpToken) {
         auctioneer = payable(_property_owner);
         auctionEndTime = _auctionEndTime;
-        property_value = _property_value;
-        pmpToken = ERC20(_pmpToken);
+        property_value = _property_value * 1e18;
+        pmpToken = IERC20(_pmpToken);
     }
     
-    function bid() external payable {
-        if (block.timestamp >= auctionEndTime) revert AuctionHasEnded();
-        if (msg.value <= property_value || msg.value <= highestBid) revert BidNotHighEnough();
+    function bid(uint256 amount) external  {
+        if (block.timestamp >= auctionEndTime) revert ErrorAuctionHasEnded();
+        if (amount <= property_value || amount <= highestBid) revert ErrorBidNotHighEnough();
 
-        //if(highestBidder != address(0) || highestBid != 0) pmpToken.transferFrom(address(this), highestBidder, highestBid);
-        pmpToken.transferFrom(msg.sender, address(this), msg.value);
+        if(highestBidder != address(0) && highestBid != 0) pmpToken.transfer(highestBidder, highestBid);
+        // give approval to this contract from msg.sender
+        pmpToken.transferFrom(msg.sender, address(this), amount);
         highestBidder = msg.sender;
-        highestBid = msg.value;
-        emit EventBid(msg.sender, msg.value);
+        highestBid = amount;
+        emit EventBid(msg.sender, amount);
     }
     
     function endAuction() external {
-        if (msg.sender == auctioneer) revert OnlyOwnerCanEndAuction();
-        if (block.timestamp >= auctionEndTime) revert AuctionHasNotEnded();
-        if (!ended) revert AuctionHasEnded();
+        if (msg.sender != auctioneer) revert ErrorOnlyOwnerCanEndAuction();
+        if (block.timestamp <= auctionEndTime) revert ErrorAuctionHasNotEnded();
+        if (ended == true) revert ErrorAuctionHasEnded();
         
         ended = true;
         emit AuctionEnded(highestBidder, highestBid);
-        pmpToken.transferFrom(address(this), auctioneer, property_value);
+        pmpToken.transfer(auctioneer, property_value);
     }
-
 }

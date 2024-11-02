@@ -40,7 +40,7 @@ const UserSideBar = ({ }: any) => {
             </li>
             <li>
               <Link
-                href="/marketplace/profile/requests/request-verification"
+                href="/marketplace/profile/requests"
                 className="flex items-center space-x-3 rounded-md p-2"
               >
                 <FontAwesomeIcon icon={faHandHoldingDollar} width={20} />

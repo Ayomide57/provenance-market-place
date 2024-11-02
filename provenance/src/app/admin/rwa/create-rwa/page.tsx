@@ -7,21 +7,18 @@ import { toast } from "react-hot-toast";
 import { UploadToStorage, UploadImages, client } from "@/lib";
 import { upload } from "thirdweb/storage";
 import { PropertyMetaData } from "@/types/property";
+import { useActiveAccount } from "thirdweb/react";
 
 
 
 const CreateRwa: React.FC = () => {
   let property_metadata: PropertyMetaData = {name: "string",address: "",description: "",images: [],document_url: "",property_Reg_Id: 0, attributes: []};
+    const smartAccount = useActiveAccount();
 
-  const [ipfsLink, updateLink] = useState<string[] | undefined>([
-    "ipfs://QmNoVnHakRYX24dyVozMs7QXHDa4DvT7rqxPFif7zQkd8Y/if%20i%20were%20a%20boy.jpg",
-  ]);
+  const [ipfsLink, updateLink] = useState<string[] | undefined>();
   const [tokenURI, updatetokenURI] = useState<string | undefined>();
 
-      const [ipfsImages, updateImagesLink] = useState<string[] | undefined>(["ipfs://QmNoVnHakRYX24dyVozMs7QXHDa4DvT7rqxPFif7zQkd8Y/if%20i%20were%20a%20boy.jpg",
-"ipfs://QmNoVnHakRYX24dyVozMs7QXHDa4DvT7rqxPFif7zQkd8Y/Jonas%20Blue%20-%20Rise%20ft.%20Jack%20%26%20Jack%20(Official%20Video).jpg",
-"ipfs://QmNoVnHakRYX24dyVozMs7QXHDa4DvT7rqxPFif7zQkd8Y/Little%20Mix%20-%20Secret%20Love%20Song%20(Official%20Video)%20ft.%20Jason%20Derulo.jpg",
-        "ipfs://QmNoVnHakRYX24dyVozMs7QXHDa4DvT7rqxPFif7zQkd8Y/Screenshot%202024-10-03%20at%2014.41.33.png"]);
+      const [ipfsImages, updateImagesLink] = useState<string[] | undefined>();
 
       const handleCreateNewRwaSubmit = (
         values: {
@@ -38,7 +35,7 @@ const CreateRwa: React.FC = () => {
         setSubmitting: { (isSubmitting: boolean): void; (arg0: boolean): void },
       ) => {
         setTimeout(async () => {
-          console.log("values =======================", values);
+          //console.log("values =======================", values);
           property_metadata.name = values.name;
           property_metadata.address = values.address;
           property_metadata.description = values.description;
@@ -49,12 +46,7 @@ const CreateRwa: React.FC = () => {
             { trait_type: "Survey Zip Code", value: values.survey_zip_code },
             { trait_type: "Survey Number", value: values.survey_number },
           ];
-          values.tokenURI = tokenURI ? tokenURI : "";
 
-          console.log("property_metadata =====================", property_metadata);
-          /**const fileBuffer = Buffer.from(
-            JSON.stringify(property_metadata),
-          );**/
           const uris = await upload({
                 client,
                 files: [
@@ -64,12 +56,17 @@ const CreateRwa: React.FC = () => {
                   },
                 ],
           });
+          
+          updatetokenURI(uris)
 
-          console.log("fileBuffer ============================", uris);
-
-          //const response = await createNewRwa(values);
-          //if (response.includes("0x")) toast.success(response); // Displays a success message
-          //console.log(values);
+          const response: any = await createNewRwa({
+            account: smartAccount,
+            rwaOwner: values.rwaOwner,
+            price: values.price,
+            property_RegId: values.property_RegId,
+            tokenURI: uris
+          });
+          console.log(response); // Displays a success message
           setSubmitting(false);
         }, 400);
       };
@@ -282,3 +279,20 @@ const CreateRwa: React.FC = () => {
 };
 
 export default CreateRwa;
+
+
+//address 290 Columbus Ave UNIT 3, Boston, MA 02116
+// name: Jewelry Box in a premier location, heart of the South End
+//zipcode: 02116
+// user: 0xACb7FD6e100CBEf3acE933E4c2389C52148B4c5E
+// price: 200000
+// reg Number: 12345
+// survey number: 112345
+/**desc: A true “Jewelry Box” in a premier location in the heart of the South End yet steps from Back Bay! 
+This rear facing residence includes in unit laundry & an exclusive use private outdoor space.There is a stunning 
+ kitchen with full sized appliances;  beautiful natural sunlight streaming through the oversized windows &
+  is quiet as it is rear facing.A few of the best features include gas heating & central air.Low association 
+  fee includes heat & hot water.A premier location close to trendy restaurants, cozy cafes, chic boutiques &
+  Back Bay Train Station.Pet friendly & 100 % move in ready.
+
+**/

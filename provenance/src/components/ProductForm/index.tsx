@@ -1,60 +1,113 @@
 import { SetStateAction, useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faShoppingCart } from "@fortawesome/free-solid-svg-icons";
-import { assets } from "@/util";
+import { assets, bid, pmpContract } from "@/util";
+import { TransactionButton, useActiveAccount } from "thirdweb/react";
+import toast from "react-hot-toast";
+import { Formik } from "formik";
+import { approve } from "thirdweb/extensions/erc20";
+import { auctionAddress } from "@/util/constants";
 
 function ProductForm({ property_RegId, price }: any) {
-  const [quantity, setQuantity] = useState<any>(0);
+    const smartAccount = useActiveAccount();
 
 
   const atcBtnStyle = `pt-3 pb-2 bg-gradient-to-r from-purple-800 to-green-500 text-white w-full mt-2 rounded-sm font-primary font-semibold text-xl flex 
                         justify-center items-baseline hover:bg-palette-dark`;
 
-  async function handleAddToCart() {
-    // update store context
-    //if (quantity !== 0 && account) {
-    /**assets({
-        address: account,
-        property_RegId: property_RegId,
-      });**/
-    //}
-  }
+      const handleBid = async (values: { amount: number }) => {
+        if (smartAccount?.address) {
+          console.log(values.amount);
+          const response: any = await bid(smartAccount, values.amount);
+          /**if (response.includes("BidNotHighEnough")) {
+              toast.error("BidNotHighEnough");
+          } else if (response.includes("AuctionHasEnded")) {
+            toast.error("AuctionHasEnded");
+          } else {
+              toast.success(response);
+            }**/
+          //toast.error(error);
+          console.log("response =======================", response);
+        }
+      };
 
-  function updateQuantity(value: string | SetStateAction<number>) {
-    if (value === 0) {
-      setQuantity(0);
-    } else {
-      setQuantity(value);
-    }
-  }
+
 
   return (
     <div className="w-full">
-      <div className="flex w-full justify-start ">
-        <div className="flex flex-grow-0 flex-col items-start space-y-1">
-          <label className="text-base text-gray-500">Qty.</label>
-
-          <input
-            type="number"
-            inputMode="numeric"
-            id="quantity"
-            name="quantity"
-            min="1"
-            step="1"
-            //value={quantity}
-            onChange={(e) => updateQuantity(e.target.value)}
-            className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-          />
-        </div>
-      </div>
-      <button
-        className={atcBtnStyle}
-        aria-label="cart-button"
-        onClick={handleAddToCart}
+      <Formik
+        initialValues={{
+          amount: 0,
+        }}
+        onSubmit={(values) => handleBid(values)}
       >
-        Bid
-        <FontAwesomeIcon icon={faShoppingCart} className="ml-2 w-5" />
-      </button>
+        {({
+          values,
+          errors,
+          touched,
+          handleChange,
+          handleBlur,
+          handleSubmit,
+          isSubmitting,
+          /* and other goodies */
+        }) => (
+          <form onSubmit={handleSubmit}>
+            <div
+              className="flex w-full justify-start"
+              style={{ width: "-webkit-fill-available" }}
+            >
+              <div
+                className="flex flex-grow-0 flex-col items-start space-y-1"
+                style={{ width: "-webkit-fill-available" }}
+              >
+                <label className="text-base text-white">Amount.</label>
+                <input
+                  style={{ width: "-webkit-fill-available" }}
+                  type="number"
+                  id="quantity"
+                  name="amount"
+                  value={values.amount}
+                  onChange={handleChange}
+                  className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-white outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                />
+              </div>
+            </div>
+            <TransactionButton
+              className={atcBtnStyle}
+              transaction={() => {
+                // Create a transaction object and return it
+                const tx = approve({
+                  contract: pmpContract,
+                  spender: auctionAddress,
+                  amount: Number(values.amount),
+                });
+//15000000000000000000
+                return tx;
+              }}
+              onTransactionSent={(result: { transactionHash: any }) => {
+                console.log("Transaction submitted", result.transactionHash);
+              }}
+              onTransactionConfirmed={(receipt: { transactionHash: any }) => {
+                console.log("Transaction confirmed", receipt.transactionHash);
+              }}
+              onError={(error: any) => {
+                console.error("Transaction error", error);
+              }}
+            >
+              Approve Amount
+            </TransactionButton>
+
+            <button
+              className={atcBtnStyle}
+              aria-label="cart-button"
+              type="submit"
+            >
+              Bid
+              <FontAwesomeIcon icon={faShoppingCart} className="ml-2 w-5" />
+            </button>
+          </form>
+        )}
+      </Formik>
     </div>
   );
 }

@@ -7,6 +7,7 @@ import { upload } from "thirdweb/storage";
 import { createThirdwebClient } from "thirdweb";
 import Image from "next/image";
 import styles from "@/styles/Home.module.css";
+import toast from "react-hot-toast";
 
 interface IUploadFile {
   updateLink: (value: string[]) => void;
@@ -27,18 +28,19 @@ export const UploadToStorage = ({ updateLink }: IUploadFile) => {
     let file: any = event.currentTarget.files && event.currentTarget.files[0];
     let uris = await upload({ client, files: [file] });
     uris = uris.replace("ipfs://", "https://ipfs.io/ipfs/");
+    toast.success(uris);
     updateLink([uris]);
   };
   return (
     <label htmlFor="myfile">
       <div className={styles.logo}>
-        <Image src="/upload.png" alt="upload Logo" height="100" width="250" />
+        <Image src="/upload.png" alt="upload Logo" height={100} width={250} />
       </div>
       <input
         className="h-[80px]"
         id="myfile"
         type="file"
-        accept="application/msword, application/vnd.ms-excel, application/vnd.ms-powerpoint,text/plain, application/pdf, image/*"
+        accept="application/msword,text/plain, application/pdf"
         style={{ display: "none" }}
         onChange={(event) => uploadFile(event)}
       />
@@ -47,7 +49,7 @@ export const UploadToStorage = ({ updateLink }: IUploadFile) => {
 };
 
 export const UploadImages = ({ updateLink }: IUploadFile) => {
-  const maxLength: number = 5;
+  const maxLength: number = 4;
   const { acceptedFiles, fileRejections, getRootProps, getInputProps } =
     useDropzone({
       maxFiles: maxLength,
@@ -85,6 +87,7 @@ export const UploadImages = ({ updateLink }: IUploadFile) => {
         uris[index] = link.replace("ipfs://", "https://ipfs.io/ipfs/");
       }
       updateLink(uris);
+      toast.success("Files uploaded successfully");
     }
   }, [acceptedFiles, updateLink]);
 

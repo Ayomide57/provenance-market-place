@@ -1,7 +1,6 @@
-import { config, NeoX } from "@/util/config";
 import { sepolia } from "thirdweb/chains";
 
-import { registrarAbi, registrarAddresses } from "./constants";
+import { pmpTokenAbi, pmpTokenSepoliaAddress, registrarAbi, registrarAddress, auctionAddress, auctionAbi } from "./constants";
 import { client } from "@/lib";
 const { ethers, JsonRpcProvider } = require("ethers");
 import {
@@ -11,120 +10,281 @@ import {
   type BaseTransactionOptions,
   type AbiParameterToPrimitiveType,
   getContract,
+  sendTransaction,
+  sendAndConfirmTransaction,
+  PreparedTransaction,
+  prepareTransaction,
 } from "thirdweb";
-import { useReadContract } from "thirdweb/react";
+import { getApprovalForTransaction, approve, allowance } from "thirdweb/extensions/erc20";
+
+import { BigNumberish } from "ethers";
+import toast from "react-hot-toast";
 
 
 // Registrar
 
 
 
-export const contract = getContract({
+export const pmContract = getContract({
   client,
-  address: registrarAddresses,
+  address: registrarAddress,
   chain: sepolia,
-  //abi: registrarAbi
+  abi: registrarAbi
+});
+
+export const pmpContract = getContract({
+  client,
+  address: pmpTokenSepoliaAddress,
+  chain: sepolia,
+  abi: pmpTokenAbi
+});
+
+export const auctionContract = getContract({
+  client,
+  address: auctionAddress,
+  chain: sepolia,
+  abi: auctionAbi,
 });
 
 
+
 export const generateRwa = async (values: {
+  account: any,
   rwaOwner: `0x${string}`;
   property_RegId: number;
   price: number;
 }) => {
-  const response = await writeContract(config, {
-    address: registrarAddresses,
-    abi: registrarAbi,
-    functionName: "generateRwa",
-    args: [
-      values.rwaOwner,
-      BigInt(values.property_RegId),
-      BigInt(values.price),
-    ],
-  });
-  return response;
+      try {
+        const transaction = prepareContractCall({
+          contract: pmContract,
+          method: "generateRwa",
+          params: [
+            values.rwaOwner,
+            BigInt(values.property_RegId),
+            BigInt(values.price),
+          ],
+        });
+
+        const { transactionHash } = await sendTransaction({
+          account: values.account,
+          transaction,
+        });
+
+        toast.success(transactionHash);
+        return transactionHash;
+      } catch (error) {
+        toast.error("Transaction Failed");
+        console.log("error =======================", error);
+        return error;
+      }
 };
 
 export const createNewRwa = async (values: {
+  account: any,
   rwaOwner: `0x${string}`;
   price: number;
   property_RegId: number;
-  survey_zip_code: number;
-  survey_number: number;
   tokenURI: string;
 }) => {
-  const response = await writeContract(config, {
-    address: registrarAddresses,
-    abi: registrarAbi,
-    functionName: "createNewRwa",
-    args: [
-      values.rwaOwner,
-      BigInt(values.property_RegId),
-      BigInt(values.price),
-      BigInt(values.survey_zip_code),
-      BigInt(values.survey_number),
-      values.tokenURI,
-    ],
-  });
-  return response;
+    try {
+      const transaction = prepareContractCall({
+        contract: pmContract,
+        method: "createNewRwa",
+        params: [
+          values.rwaOwner,
+          BigInt(values.property_RegId),
+          BigInt(values.price),
+          values.tokenURI,
+        ],
+      });
+
+      const { transactionHash } = await sendTransaction({
+        account: values.account,
+        transaction,
+      });
+      toast.success(transactionHash);
+      return transactionHash;
+    } catch (error) {
+      toast.error("Transaction Failed");
+      console.log("error =======================", error);
+      return error;
+    }
 };
 
 export const verificationRequest = async (values: {
-  p_owner: `0x${string}`;
+  account: any;
+  p_owner: string;
   property_RegId: number;
-  survey_zip_code: number;
-  survey_number: number;
   document_url: string;
 }) => {
-  const response = await writeContract(config, {
-    abi: registrarAbi,
-    functionName: "verification_request",
-    args: [
-      values.p_owner,
-      BigInt(values.property_RegId),
-      BigInt(values.survey_zip_code),
-      BigInt(values.survey_number),
-      values.document_url,
-    ],
-    address: registrarAddresses,
-  });
-  return response;
+  try {
+    const transaction = prepareContractCall({
+      contract: pmContract,
+      method: "verification_request",
+      params: [
+        values.p_owner,
+        BigInt(values.property_RegId),
+        values.document_url,
+      ],
+    });
+
+    const { transactionHash } = await sendTransaction({
+      account: values.account,
+      transaction,
+    });
+
+    toast.success(transactionHash);
+    return transactionHash;
+  } catch (error) {
+    toast.error("Transaction Failed");
+    console.log("error =======================", error);
+    return error;
+  }
+
 };
 
-/**export const transferAsset = async (values: {
-  tokenId: number;
-  newOwner: `0x${string}`;
+export const transferAsset = async (values: {
+  account: any;
+  nftAddress: `0x${string}`;
+  new_owner: `0x${string}`;
   property_RegId: number;
+  price: number;
 }) => {
-  const response = await writeContract(config, {
-    address: registrarAddresses,
-    abi: registrarAbi,
-    functionName: "transferAsset",
-    args: [BigInt(values.tokenId), values.newOwner, BigInt(values.property_RegId)],
-  });
-  return response;
-};**/
+  try {
+    const transaction = prepareContractCall({
+      contract: pmContract,
+      method: "transferAsset",
+      params: [
+        values.nftAddress,
+        values.new_owner,
+        BigInt(values.property_RegId),
+        BigInt(values.price),
+      ],
+    });
 
-export const assets = async (values: {
-  address: string;
-  property_RegId: number;
-}) => {
+    const { transactionHash } = await sendTransaction({
+      account: values.account,
+      transaction,
+    });
 
-  const response = await useReadContract({
-    contract: contract,
-    method: "function assets(address p_owner, uint256 property_RegId) returns(bool verified, bool existed, address p_owner, address nftAddress, uint256 property_RegId, uint256 value, string document_url, uint256 auctionEndTime)",
-    params: [values.address, BigInt(values.property_RegId)],
-  });
-  console.log("response ==================", response.data);
+    toast.success(transactionHash);
+    return transactionHash;
+  } catch (error) {
+    toast.error("Transaction Failed");
+    console.log("error =======================", error);
+    return error;
+  }
 
-  return response;
 };
 
-const url = "https://neoxt4seed1.ngd.network";
-const provider = new JsonRpcProvider(url);
+export const initiateBid = async (values: {
+  account: any;
+  property_RegId: number; // _property_RegId
+}) => {
+  try {
+    const transaction = prepareContractCall({
+      contract: pmContract,
+      method: "initiateBid",
+      params: [BigInt(values.property_RegId)],
+    });
+
+    const { transactionHash } = await sendTransaction({
+      account: values.account,
+      transaction,
+    });
+
+    toast.success(transactionHash);
+    return transactionHash;
+  } catch (error) {
+    toast.error("Transaction Failed");
+    console.log("error =======================", error);
+    return error;
+  }
+
+};
+
+export const assets = async (values: { account: any; property_RegId: number }) => {
+  try {
+    const transaction = prepareContractCall({
+      contract: pmContract,
+      method: "assets",
+      params: [values.account.address, BigInt(values.property_RegId)],
+    });
+
+    const { transactionHash } = await sendTransaction({
+      account: values.account,
+      transaction,
+    });
+
+    return transactionHash;
+  } catch (error) {
+    toast.error("Transaction Failed");
+    console.log("error =======================", error);
+    return error;
+  }
+
+};
+
+export const mintToken = async (account: any, amount: BigNumberish) => {
+  try {
+    const transaction = prepareContractCall({
+      contract: pmpContract,
+      method: "mint",
+      params: [account.address, BigInt(amount)],
+    });
+
+    const { transactionHash } = await sendTransaction({
+      account: account,
+      transaction,
+    });
+
+    return transactionHash;
+  } catch (error) {
+    console.log("error =======================", error);
+    return error;
+  }
+};
+
+
+export const bid = async (account: any, amount: number) => {
+  try {
+    const transaction = prepareContractCall({
+      contract: auctionContract,
+      method: "bid",
+      params: [BigInt(amount * 1000000000000000000)],
+    });
+    console.log("error3 =======================");
+
+    const { transactionHash } = await sendTransaction({
+      account: account,
+      transaction,
+    });
+    toast.success(transactionHash);
+    return transactionHash;
+  } catch (error) {
+    toast.error("Transaction Failed");
+    console.log("error =======================", error);
+    return error;
+  }
+
+};
+
+
+//const url = "https://neoxt4seed1.ngd.network";
+const url = "https://11155111.rpc.thirdweb.com/";
+export const providerLink = new JsonRpcProvider(url);
 
 export const registrarContract = new ethers.Contract(
-  registrarAddresses,
+  registrarAddress,
   registrarAbi,
-  provider,
+  providerLink
 );
+
+export const pmpTokenContract = new ethers.Contract(
+  pmpTokenSepoliaAddress,
+  pmpTokenAbi,
+  providerLink
+);
+
+
+

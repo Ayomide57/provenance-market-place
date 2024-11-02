@@ -9,7 +9,7 @@ contract RegistrarScript is Script {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
         vm.startBroadcast(deployerPrivateKey);
         //_pmpToken
-        Registrar registrar = new Registrar("");
+        Registrar registrar = new Registrar(0xCa03230E7FB13456326a234443aAd111AC96410A);
 
         vm.stopBroadcast();
     }
@@ -43,9 +43,21 @@ contract RegistrarScript is Script {
 //forge create Registrar --rpc-url $RPC_URL --private-key $PRIVATE_KEY
 //forge create --rpc-url $NEO_RPC_URL --private-key $PRIVATE_KEY src/Registrar.sol:Registrar
 
-//forge script --chain 12227332 script/Registrar.s.sol:RegistrarScript --rpc-url $NEO_RPC_URL --broadcast --sender 0x15427D97E45e3374DF934B0f1292C8556D1B79DD --gas-price 40000000000 --legacy -vvvv
+//forge script --chain 11155111 script/PMPToken.s.sol:PMPTokenScript --rpc-url $SEPOLIA_RPC_URL --broadcast --sender 0x78078EdDaAa3a5a07aaE04b45AdB44599FC50aef --gas-price 40000000000 --legacy -vvvv
 
 //ipfs://QmVxQ5djvZJ5TSx1MEpb8C7HcYn7fkuubtKyJTB1W93pWD/Homework2.pdf
 
+
+//forge script --chain sepolia script/PMPToken.s.sol:PMPTokenScript --rpc-url $SEPOLIA_RPC_URL --broadcast --sender 0x78078EdDaAa3a5a07aaE04b45AdB44599FC50aef --legacy --verify $ETHERSCAN_API_KEY -vvvv
+
+//forge script --chain 84532 script/PMPToken.s.sol:PMPTokenScript --rpc-url $BASE_SEPOLIA_RPC_URL --broadcast --sender 0x78078EdDaAa3a5a07aaE04b45AdB44599FC50aef --verify $BASESEPOLIA_SCAN_API_KEY --legacy -vvvv
+
+//forge script --chain sepolia script/Auction.s.sol:AuctionScript --rpc-url $SEPOLIA_RPC_URL --broadcast --sender 0x78078EdDaAa3a5a07aaE04b45AdB44599FC50aef --legacy -vvvv
+
+//forge script --chain sepolia script/Registrar.s.sol:RegistrarScript --rpc-url $SEPOLIA_RPC_URL --broadcast --sender 0x78078EdDaAa3a5a07aaE04b45AdB44599FC50aef --verify $ETHERSCAN_API_KEY --legacy -vvvv
+
+//forge script --chain sepolia script/PMPToken.s.sol:PMPTokenScript --rpc-url $ARBITRUM_SEPOLIA_RPC_URL --broadcast --sender 0x78078EdDaAa3a5a07aaE04b45AdB44599FC50aef --legacy --verify $ARBITRUMSEPOLIA_SCAN_API_KEY -vvvv
+
+//forge script --chain sepolia script/Registrar.s.sol:RegistrarScript --rpc-url $SEPOLIA_RPC_URL --broadcast --sender 0x78078EdDaAa3a5a07aaE04b45AdB44599FC50aef --verify $ETHERSCAN_API_KEY --legacy -vvvv
 
 
