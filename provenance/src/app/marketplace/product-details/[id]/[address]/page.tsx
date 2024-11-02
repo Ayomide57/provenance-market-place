@@ -133,10 +133,15 @@ function ProductDetail({
                   </p>
                 );
               })}
+              <br />
               <Link href={productData ? productData?.document_url : ""}>
                 View Asset Document
               </Link>
-              <button onClick={() => updateBid(!showbid)}>View Bids</button>
+              <br />
+              <br />
+              <button className="" onClick={() => updateBid(!showbid)}>
+                View Bids
+              </button>
               <div className="text-palette-primary px-1 py-4 text-xl font-normal">
                 {"$"}
                 <span className={"text-2xl"}>{`${data[5]}`}</span>

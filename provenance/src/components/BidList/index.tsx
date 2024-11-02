@@ -44,7 +44,7 @@ export type Bid = {
 };
 
 interface IupdateBid {
-  updateBid: (value: boolean) => void;
+  updateBid: any;
   auctionContractAddress: any;
 }
 
@@ -174,7 +174,7 @@ const BidList = ({ updateBid, auctionContractAddress }: IupdateBid) => {
       >
         <div className="flex justify-between">
           <h1 className="p-4 text-3xl">Bids</h1>
-          <button className="p-5 font-extrabold" onClick={() => updateBid}>
+          <button className="p-5 font-extrabold" onClick={updateBid}>
             X
           </button>
         </div>
