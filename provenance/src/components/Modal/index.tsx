@@ -1,4 +1,4 @@
-const Modal = ({children}) => {
+const Modal = ({children}: any) => {
     return (
       <div
         className="relative z-10"

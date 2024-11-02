@@ -1,55 +1,9 @@
 "use client";
-import Modal from "@/components/Modal";
-import { verificationRequest, assets } from "@/util";
-import { Formik } from "formik";
-import { useState } from "react";
-import { toast } from "react-hot-toast";
-import { client, UploadToStorage } from "@/lib";
-import { ConnectButton, useActiveAccount, useWalletBalance } from "thirdweb/react";
+import { client,  } from "@/lib";
+import { ConnectButton } from "thirdweb/react";
 import Link from "next/link";
 
 const Home: React.FC = () => {
-  const [ipfsLink, updateLink] = useState<any>();
-  const [searchResult, showSearchResult] = useState<boolean>(false);
-  const [property, setProperty] =
-    useState<
-      [
-        boolean,
-        boolean,
-        `0x${string}`,
-        `0x${string}`,
-        bigint,
-        bigint,
-        bigint,
-        bigint,
-        string,
-        bigint,
-      ]
-    >();
-
-    const account = useActiveAccount();
-
-
-  const handleFindRwa = (
-    values: {
-      address: any;
-      property_RegId: number;
-    },
-    setSubmitting: {
-      (isSubmitting: boolean): void;
-      (arg0: boolean): void;
-    },
-  ) => {
-    setTimeout(async () => {
-      console.log(values);
-      const response = await assets(values);
-      //if (response) showSearchResult(!show);
-      //console.log(response);
-      //setProperty(response);
-      //toast.success(response); // Displays a success message
-      setSubmitting(false);
-    }, 400);
-  };
 
 
 
@@ -94,112 +48,9 @@ const Home: React.FC = () => {
               Let’s turn that dream into reality!
             </p>
 
-          <Link href="/marketplace/profile/requests/request-verification"
-              className="mb-8 mt-4 transform rounded bg-gradient-to-r from-purple-800 to-green-500 px-4 py-2 font-bold text-white transition duration-300 ease-in-out hover:scale-105 hover:from-pink-500 hover:to-green-500 focus:ring"
-            >
-              Request verification
-            </Link>
-            <Formik
-              initialValues={{
-                address: "",
-                property_RegId: 0,
-              }}
-              onSubmit={(values, { setSubmitting }) =>
-                handleFindRwa(values, setSubmitting)
-              }
-            >
-              {({
-                values,
-                errors,
-                touched,
-                handleChange,
-                handleBlur,
-                handleSubmit,
-                isSubmitting,
-                /* and other goodies */
-              }) => (
-                <form
-                  onSubmit={handleSubmit}
-                  className="mb-4 w-full rounded-lg bg-gray-900 px-8 pb-8 pt-6 opacity-75 shadow-lg"
-                >
-                  <div className="mb-4">
-                    <label
-                      className="mb-2 block py-2 font-bold text-blue-300"
-                      htmlFor={"address"}
-                    >
-                      Owners Address
-                    </label>
-                    <input
-                      className="w-full transform appearance-none rounded border p-3 leading-tight text-gray-700 shadow transition duration-300 ease-in-out hover:scale-105 focus:ring"
-                      id="address"
-                      type="text"
-                      name="address"
-                      placeholder="you@somewhere.com"
-                      value={values.address}
-                      onChange={handleChange}
-                    />
-                    {errors.address && touched.address && errors.address}
-                  </div>
-                  <div className="mb-4">
-                    <label
-                      className="mb-2 block py-2 font-bold text-blue-300"
-                      htmlFor={"property_RegId"}
-                    >
-                      Property Registration Number
-                    </label>
-                    <input
-                      className="w-full transform appearance-none rounded border p-3 leading-tight text-gray-700 shadow transition duration-300 ease-in-out hover:scale-105 focus:ring"
-                      id="property_RegId"
-                      type="text"
-                      placeholder="12345"
-                      name="property_RegId"
-                      value={values.property_RegId}
-                      onChange={handleChange}
-                    />
-                  </div>
-
-                  <div className="items-center justify-between pb-8 pt-4">
-                    <button
-                      className="float-right transform rounded bg-gradient-to-r from-purple-800 to-green-500 px-4 py-2 font-bold text-white transition duration-300 ease-in-out hover:scale-105 hover:from-pink-500 hover:to-green-500 focus:ring"
-                      type="button"
-                      onClick={() => handleSubmit()}
-                    >
-                      Search
-                    </button>
-                  </div>
-                </form>
-              )}
-            </Formik>
           </div>
         </div>
       </div>
-      {searchResult && property && (
-        <Modal>
-          <div className="justify-center">
-            <div className="flex justify-between">
-              <h1 className="mb-2 font-bold text-white">{account?.address}</h1>
-              <button
-                className="text-white"
-                type="button"
-                onClick={() => showSearchResult(!searchResult)}
-              >
-                X
-              </button>
-            </div>
-            <div className="text-white">
-              <p>verified: {`${property[1]}`}</p>
-              <p>Owner: {`${property[2]}`}</p>
-              <p>NFT Contract Address: {`${property[3]}`}</p>
-              <p>Property Registration Number: {`${property[4]}`}</p>
-              <p>Survey Number: {`${property[5]}`}</p>
-              <p>Survey Number: {`${property[6]}`}</p>
-              <p>Value: {`${property[7]}`}</p>
-              <p>Ducument URL: {`${property[8]}`}</p>
-              <p>verified: {`${property[9]}`}</p>
-            </div>
-          </div>
-        </Modal>
-      )}
     </div>
   );
 };
