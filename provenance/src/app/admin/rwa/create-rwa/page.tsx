@@ -8,12 +8,14 @@ import { UploadToStorage, UploadImages, client } from "@/lib";
 import { upload } from "thirdweb/storage";
 import { PropertyMetaData } from "@/types/property";
 import { useActiveAccount } from "thirdweb/react";
+import { useRouter } from "next/router";
 
 
 
 const CreateRwa: React.FC = () => {
   let property_metadata: PropertyMetaData = {name: "string",address: "",description: "",images: [],document_url: "",property_Reg_Id: 0, attributes: []};
     const smartAccount = useActiveAccount();
+const router = useRouter();
 
   const [ipfsLink, updateLink] = useState<string[] | undefined>();
   const [tokenURI, updatetokenURI] = useState<string | undefined>();
@@ -67,6 +69,7 @@ const CreateRwa: React.FC = () => {
             tokenURI: uris
           });
           console.log(response); // Displays a success message
+          router.reload();
           setSubmitting(false);
         }, 400);
       };

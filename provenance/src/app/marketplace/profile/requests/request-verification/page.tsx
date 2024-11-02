@@ -9,8 +9,11 @@ import Link from "next/link";
 import { PropertyMetaData } from "@/types/property";
 import { upload } from "thirdweb/storage";
 import { useActiveAccount } from "thirdweb/react";
+import { useRouter } from "next/router";
 
 const VerificationRequest = () => {
+  const router = useRouter();
+
   const smartAccount = useActiveAccount();
 
   let property_metadata: PropertyMetaData = {
@@ -76,6 +79,7 @@ const VerificationRequest = () => {
     });
       if (response.includes("0x")) {
         toast.success(response); // Displays a success message
+        router.reload();
       } else {
         toast.error("Failed")
       }
@@ -256,15 +260,6 @@ const VerificationRequest = () => {
 };
 
 export default VerificationRequest;
-
-/**
- * 
- *     "ipfs://QmNoVnHakRYX24dyVozMs7QXHDa4DvT7rqxPFif7zQkd8Y/if%20i%20were%20a%20boy.jpg",
-    "ipfs://QmNoVnHakRYX24dyVozMs7QXHDa4DvT7rqxPFif7zQkd8Y/Jonas%20Blue%20-%20Rise%20ft.%20Jack%20%26%20Jack%20(Official%20Video).jpg",
-    "ipfs://QmNoVnHakRYX24dyVozMs7QXHDa4DvT7rqxPFif7zQkd8Y/Little%20Mix%20-%20Secret%20Love%20Song%20(Official%20Video)%20ft.%20Jason%20Derulo.jpg",
-    "ipfs://QmNoVnHakRYX24dyVozMs7QXHDa4DvT7rqxPFif7zQkd8Y/Screenshot%202024-10-03%20at%2014.41.33.png",
-
- */
 
     /******
      * address: 92 Corey St, Boston, MA 02132

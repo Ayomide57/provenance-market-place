@@ -6,6 +6,7 @@ import { generateRwa } from "@/util";
 import {  useState } from "react";
 import { toast } from "react-hot-toast";
 import { useActiveAccount } from "thirdweb/react";
+import { useRouter } from "next/router";
 
 
 const GenerateRwa = ({
@@ -15,6 +16,7 @@ const GenerateRwa = ({
 }) => {
   const [show, showform] = useState<boolean>(false);
   const smartAccount = useActiveAccount();
+  const router = useRouter();
 
   useEffect(() => {}, []);
 
@@ -30,7 +32,9 @@ const GenerateRwa = ({
     values.rwaOwner = params.address;
     values.property_RegId = Number(params.id);
       const response: any = await generateRwa(values);
-      if (response.includes("0x")) toast.success(response); // Displays a success message
+    if (response) toast.success(response); // Displays a success message
+    router.reload();
+
   };
   return (
     <>
