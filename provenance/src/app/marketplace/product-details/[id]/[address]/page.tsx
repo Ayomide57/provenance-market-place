@@ -47,7 +47,7 @@ function ProductDetail({
     params: [params.address, BigInt(params.id)],
   });
 
-  const fetchIPFSInfo = React.useCallback(async () => {
+ const fetchIPFSInfo = React.useCallback(async () => {
     if (data) {
       const ipfs = await fetch(
         data[6].replace("ipfs://", "https://ipfs.io/ipfs/"),
@@ -142,6 +142,11 @@ function ProductDetail({
               <button className="" onClick={() => updateBid(!showbid)}>
                 View Bids
               </button>
+              <div className="text-palette-primary px-1 py-4 text-xl font-normal">
+                {"Starting bid amount: "}
+                <span className={"text-2xl"}>{`${Number(data[5])/1000}`}</span>
+              </div>
+
               <div className="text-palette-primary px-1 py-4 text-xl font-normal">
                 {"$"}
                 <span className={"text-2xl"}>{`${data[5]}`}</span>
