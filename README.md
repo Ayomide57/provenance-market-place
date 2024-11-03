@@ -4,7 +4,7 @@
 Provenance Marketplace is a platform that transforms real-world assets into collateral using ERC1155 standard. 
 Imagine a borderless marketplace where real estate and other high-value assets are accessible to anyone, anywhere.
 
-Provenance is a decentralized, on-chain platform that revolutionizes asset trading by providing open access, transparency, and security. Our marketplace enables users to discover, evaluate, and bid on assets—all with complete, verified information on the blockchain.
+Provenance marketplace is a decentralized, on-chain platform that revolutionizes asset trading by providing open access, transparency, and security. Our marketplace enables users to discover, evaluate, and bid on assets—all with complete, verified information on the blockchain.
 
 
 ## Problem
@@ -20,7 +20,7 @@ Less trust in asset authenticity
 - **Name:** Provenance Marketplace
 - **Title:** Provenance Marketplace
 - **Version:** 0.0.1
-- **Summary:** Provenance is a decentralized, on-chain platform that revolutionizes asset trading by providing open access, transparency, and security. Our marketplace enables users to discover, evaluate, and bid on assets—all with complete, verified information on the blockchain.
+- **Summary:** Provenance marketplace is a decentralized, on-chain platform that revolutionizes asset trading by providing open access, transparency, and security. Our marketplace enables users to discover, evaluate, and bid on assets—all with complete, verified information on the blockchain.
 
 ## Author Information
 
