@@ -9,20 +9,18 @@ Provenance is a decentralized, on-chain platform that revolutionizes asset tradi
 
 ## Problem
 
-Title: Traditional Lending Limitations
-Bullets:
-Lack of accessibility to loans for many individuals and businesses.
-Lengthy approval processes and high interest rates.
-Limited transparency and trust in traditional lending institutions.
-Inadequate collateral options for borrowers.
-
+Geographical Boundaries
+Centralized Intermediaries
+Lack of transparency in asset information and transaction history
+Global barriers for investors around the world 
+Less trust in asset authenticity
 
 ## Project Information
 
 - **Name:** Provenance Marketplace
 - **Title:** Provenance Marketplace
 - **Version:** 0.0.1
-- **Summary:** is a platform that transforms real-world assets into collateral using ERC1155 standard.
+- **Summary:** Provenance is a decentralized, on-chain platform that revolutionizes asset trading by providing open access, transparency, and security. Our marketplace enables users to discover, evaluate, and bid on assets—all with complete, verified information on the blockchain.
 
 ## Author Information
 
@@ -30,7 +28,7 @@ Inadequate collateral options for borrowers.
 - **GitHub:** [Ayomide](https://github.com/Ayomide57/)
 - **Email:** [aderojuolaayomide57@gmail.com](mailto:aderojuolaayomide57@gmail.com)
 - **Email:** [quadriaderojuola@gmail.com](mailto:quadriaderojuola@gmail.com)
-- **Git Repository:** [rwa-loan-collateral](https://github.com/Ayomide57/rwa-loan-collateral)
+- **Git Repository:** [provenance marketplace](https://github.com/Ayomide57/rwa-loan-collateral)
 
 
 ## License
@@ -57,15 +55,6 @@ URL: https://sepolia.arbiscan.io/address/0xd0d555ccf9135f3616b257b3182931898bb72
 URL: https://sepolia.arbiscan.io/address/0xbebc6c25c53f4fde53ea55a7dbf289dbeebfe949
 URL: https://sepolia.arbiscan.io/address/0xac72e80ef8245773d61bdb1efd98324f8f0546fa
 URL: https://sepolia.arbiscan.io/address/0xa969ab7b69301284d8f13ae23f19196dfbe08030
-
-Signing: Ntt.setPeer for 0x78078EdDaAa3a5a07aaE04b45AdB44599FC50aef
-Signing: WormholeTransceiver.registerPeer for 0x78078EdDaAa3a5a07aaE04b45AdB44599FC50aef
-Signing: WormholeTransceiver.setIsEvmChain for 0x78078EdDaAa3a5a07aaE04b45AdB44599FC50aef
-Signing: WormholeTransceiver.setWormholeRelayingEnabled for 0x78078EdDaAa3a5a07aaE04b45AdB44599FC50aef
-Signing: Ntt.setPeer for 0x78078EdDaAa3a5a07aaE04b45AdB44599FC50aef
-Signing: WormholeTransceiver.registerPeer for 0x78078EdDaAa3a5a07aaE04b45AdB44599FC50aef
-Signing: WormholeTransceiver.setIsEvmChain for 0x78078EdDaAa3a5a07aaE04b45AdB44599FC50aef
-Signing: WormholeTransceiver.setWormholeRelayingEnabled for 0x78078EdDaAa3a5a07aaE04b45AdB44599FC50aef
 
 Registrar Contract is deployed to [0xaC831D9b51F4263fB7e2d27fe520AE499F59FC4F] on Sepolia
 Deployer: [0x78078EdDaAa3a5a07aaE04b45AdB44599FC50aef]
@@ -94,40 +83,4 @@ $ forge build
 $ forge test
 ```
 
-### Format
-
-```shell
-$ forge fmt
-```
-
-### Gas Snapshots
-
-```shell
-$ forge snapshot
-```
-
-### Anvil
-
-```shell
-$ anvil
-```
-
-### Deploy
-
-```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
-```
-
-### Cast
-
-```shell
-$ cast <subcommand>
-```
-
-### Help
-
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
-```
+### 
