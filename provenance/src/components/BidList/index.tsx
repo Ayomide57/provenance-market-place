@@ -35,12 +35,12 @@ import {
 } from "@/components/ui/table";
 import { BigNumberish, ethers } from "ethers";
 import Modal from "../Modal";
-import { auctionAbi } from "@/util/constants";
+import { auctionAbi, auctionAddress } from "@/util/constants";
 
 export type Bid = {
   id: any;
-  _bidder: string;
-  _bid: BigNumberish;
+  bidder: string;
+  bid: BigNumberish;
 };
 
 interface IupdateBid {
@@ -54,6 +54,7 @@ const columns: ColumnDef<Bid>[] = [
     id: "select",
     header: ({ table }) => (
       <Checkbox
+        className="border-white"
         checked={
           table.getIsAllPageRowsSelected() ||
           (table.getIsSomePageRowsSelected() && "indeterminate")
@@ -64,6 +65,7 @@ const columns: ColumnDef<Bid>[] = [
     ),
     cell: ({ row }) => (
       <Checkbox
+        className="border-white"
         checked={row.getIsSelected()}
         onCheckedChange={(value) => row.toggleSelected(!!value)}
         aria-label="Select row"
@@ -73,7 +75,7 @@ const columns: ColumnDef<Bid>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "_bidder",
+    accessorKey: "bidder",
     header: ({ column }) => {
       return (
         <Button
@@ -92,17 +94,17 @@ const columns: ColumnDef<Bid>[] = [
         }
         className="cursor-pointer px-4 lowercase"
       >
-        {row.getValue("_bidder")}
+        {`${row.getValue("bidder")}`.substr(0, 15) + " ..."}
       </div>
     ),
   },
   {
-    accessorKey: "_bid",
+    accessorKey: "bid",
     header: () => <div className="text-right">Bid</div>,
     cell: ({ row }) => {
       return (
         <div className="text-right font-medium">
-          {`${row.getValue("_bid")}`}{" "}
+          {`${Number(row.getValue("bid")) / 1000000000000000000}`}{" "}
         </div>
       );
     },
@@ -115,25 +117,27 @@ const BidList = ({ updateBid, auctionContractAddress }: IupdateBid) => {
   const queryRwaEvents = React.useCallback(async () => {
     const auctionEventContract = new ethers.Contract(
       auctionContractAddress,
+      //auctionAddress,
       auctionAbi,
       providerLink,
     );
 
     const events = await auctionEventContract.queryFilter("EventBid");
     const filterVal: Bid[] = [];
+    //console.log("events ========================",events);
 
     events.map((event: any, index: any) => {
       return (
         event.args &&
         filterVal.push({
           id: index,
-          _bidder: event._bidder,
-          _bid: event._bid,
+          bidder: event.args[0],
+          bid: event.args[1],
         })
       );
     });
     setProperties(filterVal);
-  }, [auctionContractAddress]);
+  }, []);
 
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -169,7 +173,7 @@ const BidList = ({ updateBid, auctionContractAddress }: IupdateBid) => {
   return (
     <Modal>
       <div
-        className="w-1/4 text-white"
+        className=" text-white"
         style={{ width: "-webkit-fill-available" }}
       >
         <div className="flex justify-between">
@@ -186,28 +190,28 @@ const BidList = ({ updateBid, auctionContractAddress }: IupdateBid) => {
                 <Input
                   placeholder="Filter owner ..."
                   value={
-                    (table.getColumn("p_owner")?.getFilterValue() as string) ??
+                    (table.getColumn("bidder")?.getFilterValue() as string) ??
                     ""
                   }
                   onChange={(event) =>
                     table
-                      .getColumn("p_owner")
+                      .getColumn("bidder")
                       ?.setFilterValue(event.target.value)
                   }
-                  className="max-w-sm border-primary"
+                  className="border-white w-1/2"
                 />
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button
                       variant="outline"
-                      className="ml-auto rounded-sm border-primary"
+                      className="ml-auto rounded-sm border-white"
                     >
                       Columns <ChevronDown className="ml-2 h-4 w-4" />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent
                     align="end"
-                    className="border border-primary bg-sky-700/30 backdrop-blur-xl"
+                    className="border border-white text-white bg-sky-700/30 backdrop-blur-xl"
                   >
                     {table
                       .getAllColumns()
@@ -229,7 +233,7 @@ const BidList = ({ updateBid, auctionContractAddress }: IupdateBid) => {
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
-              <div className="rounded-md border-primary">
+              <div className="rounded-md border-white">
                 <Table>
                   <TableHeader>
                     {table.getHeaderGroups().map((headerGroup) => (
@@ -290,7 +294,7 @@ const BidList = ({ updateBid, auctionContractAddress }: IupdateBid) => {
                     size="sm"
                     onClick={() => table.previousPage()}
                     disabled={!table.getCanPreviousPage()}
-                    className="border-primary"
+                    className="border-white"
                   >
                     Previous
                   </Button>
@@ -299,7 +303,7 @@ const BidList = ({ updateBid, auctionContractAddress }: IupdateBid) => {
                     size="sm"
                     onClick={() => table.nextPage()}
                     disabled={!table.getCanNextPage()}
-                    className="border-primary"
+                    className="border-white"
                   >
                     Next
                   </Button>

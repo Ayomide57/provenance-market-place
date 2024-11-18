@@ -21,8 +21,8 @@ contract Auction {
     IERC20 public pmpToken;
     
     event EventBid(
-        address _bidder,
-        uint256 _bid
+        address indexed _bidder,
+        uint256 indexed _bid
     );
 
     event AuctionEnded(address winner, uint256 amount);

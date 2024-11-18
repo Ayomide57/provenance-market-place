@@ -10,9 +10,7 @@ import { ThirdwebProvider } from "thirdweb/react";
 
 import { Toaster } from "react-hot-toast";
 
-// 1. Get projectID at https://cloud.walletconnect.com
 
-const projectId = process.env.NEXT_PUBLIC_PROJECT_ID || "";
 
 const metadata = {
   name: "Next Starter Template",

@@ -5,13 +5,15 @@ import {  faShoppingCart } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
-import { assets, initiateBid, pmContract, pmpContract } from "@/util";
+import { assets, initiateBid, pmContract, pmpContract, providerLink, registrarContract } from "@/util";
 import React from "react";
-import { BigNumberish } from "ethers";
+import { BigNumberish, ethers } from "ethers";
 import { balanceOf, decimals } from "thirdweb/extensions/erc20";
 import { useActiveAccount, useReadContract } from "thirdweb/react";
 import Modal from "@/components/Modal";
 import BidList from "@/components/BidList";
+import { auctionAbi, auctionAddress } from "@/util/constants";
+import toast from "react-hot-toast";
 
 export type Product = {
   name: string;
@@ -30,15 +32,18 @@ function ProductDetail({
   const [productData, setProperties] = useState<Product>();
   const [linkVideo, updateVideoLink] = useState<any[]>();
   const [showbid, updateBid] = useState<boolean>(false);
+  const [auctionContractAddress, updateContract] = useState<any>(null);
 
 
   const smartAccount = useActiveAccount();
 
   const initiateBidContract = useCallback(async () => {
-    const product: any = initiateBid({
+    const response: any = initiateBid({
       account: smartAccount,
       property_RegId: Number(params.id),
     });
+    toast.success("Contract Initaiated Successfully")
+    console.log("response2 =========",response)
   }, [params.id, smartAccount]);
 
   const { data, isLoading } = useReadContract({
@@ -46,6 +51,20 @@ function ProductDetail({
     method: "assets",
     params: [params.address, BigInt(params.id)],
   });
+
+  const queryInitiateBidEvents = React.useCallback(async () => {
+    if (data) {
+      const filter = await registrarContract.filters.EventInitiatedBid(
+        data[2],
+        data[4],
+      );
+      const events = await registrarContract.queryFilter(filter);
+      if (events[0]) {
+        updateContract(events[0].args[3]);
+      }
+    }
+
+  }, [data]);
 
  const fetchIPFSInfo = React.useCallback(async () => {
     if (data) {
@@ -77,7 +96,8 @@ function ProductDetail({
 
   useEffect(() => {
     fetchIPFSInfo();
-  }, [fetchIPFSInfo]);
+    queryInitiateBidEvents();
+  }, [fetchIPFSInfo, queryInitiateBidEvents]);
 
   return (
     <div className="min-h-screen py-12 sm:pt-20">
@@ -117,6 +137,15 @@ function ProductDetail({
                 </span>
                 {` ${data[3]}`}
               </p>
+              {auctionContractAddress && (
+                <p className="">
+                  <span className="text-lg font-extrabold">
+                    Auction Contract Address:
+                  </span>
+                  {` ${auctionContractAddress}`}
+                </p>
+              )}
+
               <p className="">
                 <span className="text-lg font-extrabold">
                   Property Registration Number:
@@ -139,12 +168,15 @@ function ProductDetail({
               </Link>
               <br />
               <br />
-              <button className="" onClick={() => updateBid(!showbid)}>
+              {auctionContractAddress &&
+                <button className="" onClick={() => updateBid(!showbid)}>
                 View Bids
-              </button>
+              </button>}
               <div className="text-palette-primary px-1 py-4 text-xl font-normal">
                 {"Starting bid amount: "}
-                <span className={"text-2xl"}>{`${Number(data[5])/1000}`}</span>
+                <span
+                  className={"text-2xl"}
+                >{`${Number(data[5]) / 1000}`}</span>
               </div>
 
               <div className="text-palette-primary px-1 py-4 text-xl font-normal">
@@ -153,11 +185,15 @@ function ProductDetail({
               </div>
             </div>
 
-            <ProductForm property_RegId={params.id} price={data[5]} />
+            {auctionContractAddress && <ProductForm
+              auctionContractAddress={auctionContractAddress}
+              property_RegId={params.id}
+              price={data[5]}
+            />}
           </div>
           {showbid && (
             <BidList
-              auctionContractAddress={data[3]}
+              auctionContractAddress={auctionContractAddress}
               updateBid={() => updateBid(!showbid)}
             />
           )}

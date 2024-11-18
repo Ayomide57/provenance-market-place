@@ -168,13 +168,13 @@ contract Registrar {
 // Initiate New Auction Contract every time user initiate a bid 
 
     function initiateBid(
-       uint256 _tokenId //_property_RegId
-    ) onlyPropertyOwner(msg.sender, _tokenId) public returns(bool){
+       uint256 _property_RegId //_property_RegId
+    ) onlyPropertyOwner(msg.sender, _property_RegId) public returns(bool){
         uint256 _bid_duration = block.timestamp + BID_DURATION; 
-        uint starting_bid = assets[msg.sender][_tokenId].value / PROPERTY_TOKEN;
-        assets[msg.sender][_tokenId].auctionEndTime = _bid_duration;
+        uint starting_bid = assets[msg.sender][_property_RegId].value / PROPERTY_TOKEN;
         Auction auction = new Auction(msg.sender, _bid_duration, starting_bid, pmpToken);
-        emit EventInitiatedBid(msg.sender, _tokenId, _bid_duration, auction);
+        assets[msg.sender][_property_RegId].auctionEndTime = _bid_duration;
+        emit EventInitiatedBid(msg.sender, _property_RegId, _bid_duration, auction);
         return true;
     }
 

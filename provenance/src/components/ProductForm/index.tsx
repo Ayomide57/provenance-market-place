@@ -8,30 +8,30 @@ import { Formik } from "formik";
 import { approve } from "thirdweb/extensions/erc20";
 import { auctionAddress } from "@/util/constants";
 
-function ProductForm({ property_RegId, price }: any) {
-    const smartAccount = useActiveAccount();
-
+function ProductForm({ auctionContractAddress, property_RegId, price }: any) {
+  const smartAccount = useActiveAccount();
+  const [bidAmount, updateBid] = useState();
 
   const atcBtnStyle = `pt-3 pb-2 bg-gradient-to-r from-purple-800 to-green-500 text-white w-full mt-2 rounded-sm font-primary font-semibold text-xl flex 
                         justify-center items-baseline hover:bg-palette-dark`;
 
-      const handleBid = async (values: { amount: number }) => {
-        if (smartAccount?.address) {
-          console.log(values.amount);
-          const response: any = await bid(smartAccount, values.amount);
-          /**if (response.includes("BidNotHighEnough")) {
+  const handleBid = async (values: { amount: number }) => {
+    if (smartAccount?.address) {
+      console.log(values.amount);
+      const response: any = await bid(smartAccount, values.amount);
+      /**if (response.includes("BidNotHighEnough")) {
               toast.error("BidNotHighEnough");
           } else if (response.includes("AuctionHasEnded")) {
             toast.error("AuctionHasEnded");
           } else {
               toast.success(response);
             }**/
-          //toast.error(error);
-          console.log("response =======================", response);
-        }
-      };
+      //toast.error(error);
+      console.log("response =======================", response);
+    }
+  };
 
-
+  useEffect(() => {});
 
   return (
     <div className="w-full">
@@ -72,31 +72,6 @@ function ProductForm({ property_RegId, price }: any) {
                 />
               </div>
             </div>
-            <TransactionButton
-              className={atcBtnStyle}
-              transaction={() => {
-                // Create a transaction object and return it
-                const tx = approve({
-                  contract: pmpContract,
-                  spender: auctionAddress,
-                  amount: Number(values.amount),
-                });
-//15000000000000000000
-                return tx;
-              }}
-              onTransactionSent={(result: { transactionHash: any }) => {
-                console.log("Transaction submitted", result.transactionHash);
-              }}
-              onTransactionConfirmed={(receipt: { transactionHash: any }) => {
-                console.log("Transaction confirmed", receipt.transactionHash);
-              }}
-              onError={(error: any) => {
-                console.error("Transaction error", error);
-              }}
-            >
-              Approve Amount
-            </TransactionButton>
-
             <button
               className={atcBtnStyle}
               aria-label="cart-button"

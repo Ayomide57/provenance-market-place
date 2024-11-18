@@ -248,18 +248,32 @@ export const mintToken = async (account: any, amount: BigNumberish) => {
 
 export const bid = async (account: any, amount: number) => {
   try {
-    const transaction = prepareContractCall({
-      contract: auctionContract,
-      method: "bid",
-      params: [BigInt(amount * 1000000000000000000)],
+    const tx = approve({
+      contract: pmpContract,
+      spender: auctionAddress,
+      amount: Number(amount),
     });
-    console.log("error3 =======================");
 
     const { transactionHash } = await sendTransaction({
       account: account,
-      transaction,
+      transaction: tx,
     });
-    toast.success(transactionHash);
+
+    if (transactionHash) {
+      setTimeout(async() => {
+              const transaction = prepareContractCall({
+                contract: auctionContract,
+                method: "bid",
+                params: [BigInt(amount * 1000000000000000000)],
+              });
+              const { transactionHash } = await sendTransaction({
+                account: account,
+                transaction,
+              });
+              toast.success(transactionHash);
+
+      }, 7000)
+    }
     return transactionHash;
   } catch (error) {
     toast.error("Transaction Failed");
